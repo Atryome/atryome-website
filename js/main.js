@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('scroll', handleScroll, { passive: true });
 
   // 3. Section Reveal Intersection Observer (Fail-Safe for #aurora, #experience, #technology, #vision, and #contact)
-  const revealSections = document.querySelectorAll('.section-aurora, .section-experience, .section-technology, .section-vision, .section-contact');
+  const revealSections = document.querySelectorAll('.section-aurora, .section-experience, .section-technology, .section-vision, .section-contact, .development-section');
 
   if ('IntersectionObserver' in window && revealSections.length > 0) {
     const observer = new IntersectionObserver((entries) => {
