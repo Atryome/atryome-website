@@ -1,0 +1,11 @@
+# Aurora / ATRYOME static-site release policy
+PUBLIC_DIR=.
+EXPECTED_ROUTES_FILE=.agents/aurora-static-site-release-audit.routes
+CANONICAL_BASE=https://atryome.com
+REQUIRE_CLEAN_WORKTREE=true
+REQUIRE_SITEMAP=true
+REQUIRE_ROBOTS_SITEMAP=true
+REQUIRE_METADATA=true
+REQUIRE_JS_SYNTAX=true
+SITEMAP_FILE=sitemap.xml
+ROBOTS_FILE=robots.txt
