@@ -194,6 +194,7 @@ def main() -> int:
         return 1
 
     expected_routes: set[str] = set()
+    metadata_pages: set[Path] | None = set() if args.routes_file else None
     if args.routes_file:
         for line in args.routes_file.read_text(encoding="utf-8").splitlines():
             if not line.strip() or line.lstrip().startswith("#"):
@@ -203,8 +204,11 @@ def main() -> int:
                 report.emit("BLOCKER", f"invalid expected route: {line.strip()}")
                 continue
             expected_routes.add(route)
-            if file_for_route(root, route) is None:
+            page_for_route = file_for_route(root, route)
+            if page_for_route is None:
                 report.emit("BLOCKER", f"expected route has no local page: {route}")
+            else:
+                metadata_pages.add(page_for_route)
         report.emit("INFO", f"checked {len(expected_routes)} expected public routes")
 
     pages = sorted(root.rglob("*.html"))
@@ -212,6 +216,9 @@ def main() -> int:
         report.emit("WARNING", "no HTML pages found in public directory")
     for page in pages:
         relative = page.relative_to(root)
+        in_metadata_scope = metadata_pages is None or page in metadata_pages
+        if not in_metadata_scope:
+            report.emit("INFO", f"non-indexable or undeclared HTML page: {relative}")
         try:
             text = page.read_text(encoding="utf-8")
         except UnicodeDecodeError:
@@ -225,15 +232,16 @@ def main() -> int:
                 report.emit("BLOCKER", f"{problem} in {relative}: {value}")
             elif target is not None and not target_exists(root, target, kind):
                 report.emit("BLOCKER", f"broken local {kind} in {relative}: {value}")
-        required = {"title": parsed.title.strip(), "description": parsed.meta.get("description", ""), "og:title": parsed.meta.get("og:title", ""), "og:description": parsed.meta.get("og:description", ""), "og:image": parsed.meta.get("og:image", ""), "twitter:card": parsed.meta.get("twitter:card", "")}
-        metadata_severity = "BLOCKER" if require_metadata else "WARNING"
-        for key, value in required.items():
-            if not value.strip():
-                report.emit(metadata_severity, f"missing {key} in {relative}")
-        if not parsed.canonical:
-            report.emit(metadata_severity, f"missing canonical URL in {relative}")
-        elif expected_origin and origin(parsed.canonical) != expected_origin:
-            report.emit("BLOCKER", f"canonical URL outside configured origin in {relative}: {parsed.canonical}")
+        if in_metadata_scope:
+            required = {"title": parsed.title.strip(), "description": parsed.meta.get("description", ""), "og:title": parsed.meta.get("og:title", ""), "og:description": parsed.meta.get("og:description", ""), "og:image": parsed.meta.get("og:image", ""), "twitter:card": parsed.meta.get("twitter:card", "")}
+            metadata_severity = "BLOCKER" if require_metadata else "WARNING"
+            for key, value in required.items():
+                if not value.strip():
+                    report.emit(metadata_severity, f"missing {key} in {relative}")
+            if not parsed.canonical:
+                report.emit(metadata_severity, f"missing canonical URL in {relative}")
+            elif expected_origin and origin(parsed.canonical) != expected_origin:
+                report.emit("BLOCKER", f"canonical URL outside configured origin in {relative}: {parsed.canonical}")
         for item in parsed.json_ld:
             try:
                 json.loads(item)

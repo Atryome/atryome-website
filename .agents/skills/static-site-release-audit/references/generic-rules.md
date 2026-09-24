@@ -15,7 +15,7 @@ Run the audit against an explicit local repository root and its static public di
 | `SITEMAP_FILE` | Sitemap path relative to public directory | `sitemap.xml` |
 | `ROBOTS_FILE` | Robots path relative to public directory | `robots.txt` |
 
-All configured paths must remain inside the applicable repository or public root after symlink resolution. Routes use URL paths, one per line, such as `/`, `/about/`, or `/contact`; `/about` and `/about/` are equivalent. Route-to-file mapping accepts `route/index.html`, `route.html`, or an exact file path where appropriate. Policy owners decide whether a route is public; the generic skill does not infer a client’s information architecture.
+All configured paths must remain inside the applicable repository or public root after symlink resolution. Routes use URL paths, one per line, such as `/`, `/about/`, or `/contact`; `/about` and `/about/` are equivalent. Route-to-file mapping accepts `route/index.html`, `route.html`, or an exact file path where appropriate. When `EXPECTED_ROUTES_FILE` is present, its resolved pages are the indexable/public metadata scope: required title, description, canonical, Open Graph, and Twitter checks apply only to those pages. Other discovered HTML documents remain structurally audited, receive an `INFO` finding as non-indexable or undeclared, and do not receive required-metadata failures. Without `EXPECTED_ROUTES_FILE`, all discovered HTML documents remain in metadata scope. Policy owners decide whether a route is public; the generic skill does not infer a client’s information architecture.
 
 ## Deterministic checks
 
