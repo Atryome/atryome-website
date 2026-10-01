@@ -3362,38 +3362,50 @@ body.is-loaded .development-hero-meta {
 
 .layer-measure { align-self: start; display: flex; flex-direction: column; gap: .55rem; padding-top: .12rem; }
 .layer-value { margin: 0; color: #fff; font-size: .92rem; letter-spacing: .2em; text-align: right; }
-.layer-gauge { max-width: 100%; height: 20px; }
+.layer-gauge {
+  --pulse-width: min(18%, var(--maturity));
+  --gauge-energy-opacity: .66;
+  --gauge-charge-opacity: .66;
+  --gauge-halo-opacity: .66;
+  --gauge-trace-opacity: .72;
+  --gauge-phase: 0s;
+  max-width: 100%;
+  height: 20px;
+  overflow: hidden;
+}
 .layer-gauge .gauge-baseline,
 .layer-gauge .gauge-trace { top: 6px; }
-.layer-gauge .gauge-trace { background: rgba(255,255,255,.9); }
-.layer-gauge .gauge-terminal { top: 2px; width: 8px; height: 8px; margin-left: -4px; background: #fff; box-shadow: none; }
+.layer-gauge .gauge-trace { background: linear-gradient(90deg, #38cdf0, #2b7fff 38%, #9d42f5 72%, #e042f5); opacity: var(--gauge-trace-opacity); }
+.layer-gauge .gauge-terminal { position: absolute; z-index: 3; top: 2px; width: 8px; height: 8px; margin-left: -4px; background: #fff; box-shadow: none; animation: developmentTerminalCharge 5.5s linear infinite; animation-delay: var(--gauge-phase); }
+.layer-gauge .gauge-terminal::after { content: ''; position: absolute; top: 50%; left: 50%; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.74) 0%, rgba(157,66,245,.28) 32%, rgba(56,205,240,0) 72%); transform: translate(-50%, -50%); opacity: 0; animation: developmentTerminalHalo 5.5s linear infinite; animation-delay: var(--gauge-phase); }
 .layer-gauge .gauge-tick { top: 2px; height: 8px; background: rgba(255,255,255,.26); }
-.development-layer.is-active .layer-gauge .gauge-trace { background: linear-gradient(90deg, #38cdf0, #2b7fff 38%, #9d42f5 72%, #e042f5); }
-.development-layer.is-active .layer-gauge { --pulse-width: 18%; overflow: hidden; }
-.development-layer.is-active .layer-gauge .gauge-terminal { z-index: 3; animation: developmentTerminalCharge 5.5s linear infinite; }
-.development-layer.is-active .layer-gauge .gauge-terminal::after { content: ''; position: absolute; top: 50%; left: 50%; width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.74) 0%, rgba(157,66,245,.28) 32%, rgba(56,205,240,0) 72%); transform: translate(-50%, -50%); opacity: 0; animation: developmentTerminalHalo 5.5s linear infinite; }
-.development-layer.is-active .layer-gauge::after { content: ''; position: absolute; z-index: 2; top: 4px; left: calc(-1 * var(--pulse-width)); width: var(--pulse-width); height: 5px; background: linear-gradient(90deg, transparent 0%, #38cdf0 24%, #fff 66%, #9d42f5 86%, #e042f5 100%); filter: blur(.2px); animation: developmentSignalPulse 5.5s linear infinite; }
+.layer-gauge::after { content: ''; position: absolute; z-index: 2; top: 4px; left: calc(-1 * var(--pulse-width)); width: var(--pulse-width); height: 5px; background: linear-gradient(90deg, transparent 0%, #38cdf0 24%, #fff 66%, #9d42f5 86%, #e042f5 100%); filter: blur(.2px); animation: developmentSignalPulse 5.5s linear infinite; animation-delay: var(--gauge-phase); }
+.development-layer:first-child .layer-gauge { --gauge-energy-opacity: .62; --gauge-charge-opacity: .62; --gauge-halo-opacity: .62; --gauge-trace-opacity: .68; --gauge-phase: -3.1s; }
+.development-layer.is-active .layer-gauge { --gauge-energy-opacity: 1; --gauge-charge-opacity: 1; --gauge-halo-opacity: 1; --gauge-trace-opacity: 1; --gauge-phase: -.9s; }
+.development-layer:nth-child(3) .layer-gauge { --gauge-phase: -4.2s; }
+.development-layer:nth-child(4) .layer-gauge { --gauge-phase: -2s; }
+.development-layer:nth-child(5) .layer-gauge { --gauge-phase: -5.1s; }
 
 .layer-description { grid-column: 2; max-width: 590px; margin: -.2rem 0 0; font-size: .96rem; line-height: 1.7; color: var(--color-text-silver); }
 
 @keyframes developmentSignalPulse {
   0% { left: calc(-1 * var(--pulse-width)); opacity: 0; }
-  10% { opacity: .9; }
-  78% { left: calc(var(--maturity) - var(--pulse-width)); opacity: 1; }
-  86% { left: calc(var(--maturity) - var(--pulse-width)); opacity: .82; }
+  10% { opacity: calc(.9 * var(--gauge-energy-opacity)); }
+  78% { left: calc(var(--maturity) - var(--pulse-width)); opacity: var(--gauge-energy-opacity); }
+  86% { left: calc(var(--maturity) - var(--pulse-width)); opacity: calc(.82 * var(--gauge-energy-opacity)); }
   94%, 100% { left: calc(var(--maturity) - var(--pulse-width)); opacity: 0; }
 }
 
 @keyframes developmentTerminalCharge {
   0%, 76%, 100% { background: #fff; box-shadow: none; }
-  80% { background: #fff; box-shadow: 0 0 4px rgba(255,255,255,.82), 0 0 12px rgba(157,66,245,.66), 0 0 18px rgba(56,205,240,.34); }
-  90% { background: #fff; box-shadow: 0 0 3px rgba(255,255,255,.42), 0 0 7px rgba(157,66,245,.28); }
+  80% { background: #fff; box-shadow: 0 0 4px rgb(255 255 255 / calc(.82 * var(--gauge-charge-opacity))), 0 0 12px rgb(157 66 245 / calc(.66 * var(--gauge-charge-opacity))), 0 0 18px rgb(56 205 240 / calc(.34 * var(--gauge-charge-opacity))); }
+  90% { background: #fff; box-shadow: 0 0 3px rgb(255 255 255 / calc(.42 * var(--gauge-charge-opacity))), 0 0 7px rgb(157 66 245 / calc(.28 * var(--gauge-charge-opacity))); }
 }
 
 @keyframes developmentTerminalHalo {
   0%, 76%, 100% { opacity: 0; }
-  80% { opacity: 1; }
-  90% { opacity: .28; }
+  80% { opacity: var(--gauge-halo-opacity); }
+  90% { opacity: calc(.28 * var(--gauge-halo-opacity)); }
 }
 
 .development-focus,
@@ -3496,10 +3508,11 @@ body.is-loaded .development-section:not(.is-in-view) .development-reveal {
   .development-hero-meta,
   .development-reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
   .development-scroll span,
-  .development-layer.is-active .layer-gauge::after,
-  .development-layer.is-active .layer-gauge .gauge-terminal,
-  .development-layer.is-active .layer-gauge .gauge-terminal::after { animation: none !important; }
-  .development-layer.is-active .layer-gauge::after { left: 36%; opacity: .75; }
+  .layer-gauge::after,
+  .layer-gauge .gauge-terminal,
+  .layer-gauge .gauge-terminal::after { animation: none !important; }
+  .layer-gauge::after,
+  .layer-gauge .gauge-terminal::after { opacity: 0 !important; }
 }
 
 /* Secondary Aurora Development Discovery Link */
