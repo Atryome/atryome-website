@@ -3531,6 +3531,12 @@ body.is-loaded .development-section:not(.is-in-view) .development-reveal {
   opacity: 0;
   transform: translateY(24px);
 }
+/* Essential methodology content must not depend on an observer callback.
+   Safari can restore or throttle a page after `is-loaded` is present. */
+body.is-loaded .development-section.scientific-engineering:not(.is-in-view) .development-reveal {
+  opacity: 1;
+  transform: none;
+}
 .development-reveal { transition: opacity 1.25s var(--ease-cinematic), transform 1.25s var(--ease-cinematic); }
 .development-section.is-in-view .development-reveal { opacity: 1; transform: translateY(0); }
 .development-layers .development-layer:nth-child(2) { transition-delay: .08s; }.development-layers .development-layer:nth-child(3) { transition-delay: .16s; }.development-layers .development-layer:nth-child(4) { transition-delay: .24s; }.development-layers .development-layer:nth-child(5) { transition-delay: .32s; }
@@ -3638,6 +3644,15 @@ body.is-loaded .development-section:not(.is-in-view) .development-reveal {
   .scientific-professional-layout .scientific-instrument { order: 1; }
   .scientific-method-details { grid-template-columns: repeat(2, 1fr); }
   .scientific-evidence { grid-template-columns: 1fr; gap: 1.5rem; }
+}
+
+/* Keep the three-column comparison within the tablet content width. */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .scientific-sequence { min-width: 0; }
+  .scientific-comparison-list > div {
+    grid-template-columns: minmax(130px, .6fr) minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: clamp(1rem, 3vw, 1.5rem);
+  }
 }
 
 @media (max-width: 767px) {
